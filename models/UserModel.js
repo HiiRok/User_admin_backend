@@ -1,12 +1,12 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+
+const userRoles = ['admin', 'user'];
+
+const accessTypes = ['public', 'private'];
+
 const userSchema = new mongoose.Schema({
-    firstName: {
+    name: {
         type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
     },
     email: {
         type: String,
@@ -16,17 +16,35 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    confirmPassword: {
-        type: String,
-        required: true
-    },
-    department: {
+    bio: {
         type: String
     },
     phoneNumber: {
-        type: String
+        type: String,
+        match: /^\d{10}$/ 
+    },
+    profilePhoto:{
+        type: Buffer 
+    },
+    profilePhotoUrl:{
+        type: String,
+        validate: {
+            validator: function(value) {
+                return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(value) || /\.(jpg|jpeg|png|gif)$/i.test(value);
+            },
+            message: 'Profile photo must be a valid URL or image file path'
+        }
+    },
+    role:{
+        type: String,
+        enum: userRoles,
+        default: 'user' 
+    },
+    accessType:{
+        type: String,
+        enum: accessTypes,
+        default: 'public' 
     }
-})
+});
 
-
-module.exports = mongoose.model('User' , userSchema)
+module.exports = mongoose.model('User', userSchema);
